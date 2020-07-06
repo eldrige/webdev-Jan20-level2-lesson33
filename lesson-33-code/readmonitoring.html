@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #progress_bar{
+            margin: 10px 0;
+            padding: 3px;
+            border: 1px solid black;
+            font-size: 1rem;
+            clear: both;
+            opacity: 0;
+            transition: opacity 1s linear;
+        }
+        #progress_bar.loading {
+            opacity: 3
+        }
+        #progress_bar .percent{
+            background-color: #99ccff;
+            height: auto;
+            width: 0;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" name="file" id="files">
+    <button onclick="abortRead(">Cancel Read</button>
+    <div id="progress_bar">
+        <div class="percent">0%</div>
+    </div>
+    <script>
+        var reader
+        var progress = document.querySelector('.percent')
+        function abortRead(){
+            reader.abort()
+        }
+        function errorHandler(e){
+            switch(e.target.error.code){
+                
+                case e.target.error.NOT_FOUND_ERR:
+                alert('File not found')
+                break
+                case e.target.error.NOT_FOUND_ERR:
+                alert('File is not readable')
+                break
+                case e.target.error.NOT_FOUND_ERR:
+                break
+                default:
+                    alert:
+                    alert('An error occured reading this file')
+                
+            }
+        }
+
+        function updateProgress(e){
+            // e is a progress event
+            if(e.lengthComputable) {
+                var percentLoaded = Math.round((e.loaded / e.total) * 100)
+                // increase the progress bar length
+                if(percentLoaded < 100){
+                    progress.style.width = percentLoaded + '%'
+                    progress.textContent = percentLoaded + '%'
+                }
+            }
+        }
+
+        function handleFileSelect(e){
+            // reset progress indicator on new file selection
+            progress.style.width = '0%'
+            progress.textContent = '0%'
+
+            reader = new FileReader()
+            reader.onerror = errorHandler
+            reader.onprogress = updateProgress
+            reader.onabort = (e) => {
+                alert('File read cancelled')
+            }
+            reader.onloadstart = (e) =>{
+                document.getElementById('progress_bar').className = 'loading'
+            }
+            reader.onload = (e) => {
+                // ensure that the progress bar displays 100% at the end
+                progress.style.width = '100%'
+                progress.textContent = '100%'
+            
+            setTimeout('document.getElementById("progress_bar").className="";', 2000)
+            }
+            // read in the image file as a binary string
+            reader.readAsBinaryString(e.target.files[0])
+
+        }
+        document.getElementById('files').addEventListener(('change'), handleFileSelect, false)
+    </script>
+</body>
+</html>
